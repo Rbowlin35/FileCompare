@@ -17,7 +17,7 @@ namespace FileCompare.Core
 
         public FileObject(string path)
         {
-            Name = Path.GetFileName(path);
+            Name = path;
 
             var f = new FileInfo(path);
             Size = f.Length;
@@ -27,7 +27,7 @@ namespace FileCompare.Core
         {
             var fObj = obj as FileObject;
                 if (FileType == fObj.FileType
-                    && Name == fObj.Name
+                    && ToString() == fObj.ToString()
                     && Size == fObj.Size)
                     return Compare(obj);
 
@@ -42,9 +42,9 @@ namespace FileCompare.Core
         public abstract bool Compare(object obj);
         public abstract bool CompareContents(object obj, object obj2);
 
-        public virtual string Display()
+        public override string ToString()
         {
-            return Name;
+            return Path.GetFileName(Name);
         }
     }
 }

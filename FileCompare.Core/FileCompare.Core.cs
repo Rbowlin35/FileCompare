@@ -12,10 +12,10 @@ namespace FileCompare.Core
         internal string path1;
         internal string path2;
 
-        public List<string> Both;
-        public List<string> LeftOnly;
-        public List<string> RightOnly;
-        public List<string> Differ;
+        public List<FileObject> Both;
+        public List<FileObject> LeftOnly;
+        public List<FileObject> RightOnly;
+        public List<FileObject> Differ;
 
 
         public FileCompareCore(string f1, string f2)
@@ -23,10 +23,10 @@ namespace FileCompare.Core
             path1 = f1;
             path2 = f2;
 
-            Both = new List<string>();
-            LeftOnly = new List<string>();
-            RightOnly = new List<string>();
-            Differ = new List<string>();
+            Both = new List<FileObject>();
+            LeftOnly = new List<FileObject>();
+            RightOnly = new List<FileObject>();
+            Differ = new List<FileObject>();
         }
 
         public void RunCompare()
@@ -48,25 +48,24 @@ namespace FileCompare.Core
 
             Task.WaitAll(t1, t2);
 
-            var display1 = Files1.Select(f => f.Name);
-            var display2 = Files2.Select(f => f.Name);
-            var both = Files1.Where(f => display2.Contains(f.Name)).ToList();
+            var display1 = Files1.Select(f => f.ToString()).ToList();
+            var display2 = Files2.Select(f => f.ToString()).ToList();
+            Both = Files1.Where(f => display2.Contains(f.ToString())).ToList();
 
             var t3 = Task.Factory.StartNew(() =>
             {
-                Both = both.Select(d => d.Display()).ToList();
-                LeftOnly = Files1.Where(f => !display2.Contains(f.Name)).Select(d => d.Display()).ToList();
-                RightOnly = Files2.Where(f => !display1.Contains(f.Name)).Select(d => d.Display()).ToList();
+                LeftOnly = Files1.Where(f => !display2.Contains(f.ToString())).ToList();
+                RightOnly = Files2.Where(f => !display1.Contains(f.ToString())).ToList();
             });
 
             var t4 = Task.Factory.StartNew(() =>
             {
-                Differ = new List<string>();
-                foreach (var b in Files1.Where(f => both.Select(d => d.Name).ToList().Contains(f.Name)))
+                Differ = new List<FileObject>();
+                foreach (var b in Files1.Where(f => Both.Select(d => d.ToString()).ToList().Contains(f.ToString())))
                 {
-                    var b2 = Files2.Single(f => f.Name == b.Name);
+                    var b2 = Files2.Single(f => f.ToString() == b.ToString());
                     if (!b.Equals(b2))
-                        Differ.Add(b.Display());
+                        Differ.Add(b);
                 }
             });
 

@@ -70,14 +70,14 @@ namespace FileCompare.Core
             return obj.Equals(obj2);
         }
 
-        public override string Display()
+        public override string ToString()
         {
             if (_loaded != false)
             {
-                return string.Join(Environment.NewLine + $"{Name}:", _contents.Select(s => s.Name).ToArray());
+                return string.Join(Environment.NewLine, _contents.Select(s => $"{Path.GetFileName(Name)}:{s.ToString()}").ToArray());
             }
             else
-                return $"{Name}: Loading contents...";
+                return $"{Path.GetFileName(Name)}: Loading contents...";
         }
     }
 }
